@@ -39,7 +39,8 @@
       --gold3: rgba(var(--t-rgb), 0.16);
       --gold4: rgba(var(--t-rgb), 0.32);
       --cream: #ede8df;
-      --dim: #6a5f52;
+      /* Cooler steel-blue dim — breathes better on dark navy bg */
+      --dim: #5a6478;
       --alarm: #e06060;
       --alarm2: rgba(224, 96, 96, 0.22);
       --CLK: clamp(200px, min(55vh, 42vw), 420px);
@@ -347,7 +348,7 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-      opacity: .032;
+      opacity: .055;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
     }
 
@@ -760,6 +761,8 @@
       line-height: 1;
       color: var(--cream);
       text-align: right;
+      /* Subtle warm-gold glow makes the digits luminous, not flat */
+      text-shadow: 0 0 60px rgba(var(--t-rgb), .18), 0 2px 18px rgba(0, 0, 0, .55);
     }
 
     .time-arch .ampm {
@@ -773,10 +776,13 @@
 
     .time-secs {
       font-size: clamp(1.1rem, 2.4vmin, 1.5rem);
-      letter-spacing: .28em;
+      letter-spacing: .32em;
       color: var(--dim);
-      margin-top: clamp(4px, .8vh, 10px);
+      margin-top: clamp(6px, 1.2vh, 14px);
       text-align: right;
+      /* Thin divider above seconds — visual breathing room */
+      padding-top: clamp(6px, 1vh, 12px);
+      border-top: 1px solid rgba(var(--t-rgb), .10);
     }
 
     .time-date-line {
@@ -876,7 +882,18 @@
     .compl-block {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
+      padding: 7px 10px 7px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(var(--t-rgb), .07);
+      /* Left gold accent stripe */
+      box-shadow: inset 2px 0 0 rgba(var(--t-rgb), .28);
+      background: rgba(var(--t-rgb), .018);
+      transition: border-color .25s;
+    }
+
+    .compl-block:hover {
+      border-color: rgba(var(--t-rgb), .14);
     }
 
     .slbl {
@@ -889,10 +906,11 @@
 
     .compl-val {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: clamp(1rem, 2.2vmin, 1.3rem);
+      font-size: clamp(1.05rem, 2.3vmin, 1.35rem);
       font-weight: 400;
       color: var(--cream);
       letter-spacing: .04em;
+      text-shadow: 0 0 24px rgba(var(--t-rgb), .12);
     }
 
     .compl-sub {
@@ -978,12 +996,17 @@
       align-items: center;
       gap: 4px;
       padding: 10px 0;
-      background: rgba(4, 7, 14, .80);
-      border: 1px solid rgba(var(--t-rgb), .13);
+      /* Rich layered bg: very dark navy with faint top highlight */
+      background: linear-gradient(180deg, rgba(12, 18, 32, .92) 0%, rgba(4, 7, 14, .88) 100%);
+      border: 1px solid rgba(var(--t-rgb), .16);
       border-radius: 28px;
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .03) inset, 0 1px 0 rgba(var(--t-rgb), .08) inset;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      box-shadow:
+        0 8px 40px rgba(0, 0, 0, .65),
+        0 1px 0 rgba(255, 255, 255, .06) inset,
+        0 -1px 0 rgba(0, 0, 0, .4) inset,
+        0 0 0 1px rgba(var(--t-rgb), .06) inset;
     }
 
     .ibtn {
@@ -1005,8 +1028,9 @@
 
     .ibtn:hover {
       color: var(--gold);
-      background: rgba(var(--t-rgb), .10);
-      transform: scale(1.08);
+      background: rgba(var(--t-rgb), .12);
+      transform: scale(1.10);
+      box-shadow: 0 0 14px rgba(var(--t-rgb), .18);
     }
 
     .ibtn:active {
@@ -1340,6 +1364,7 @@
     /* Custom gold volume slider */
     .vdrw input[type=range] {
       -webkit-appearance: none;
+      appearance: none;
       flex: 1;
       height: 3px;
       background: rgba(255, 255, 255, .07);
@@ -1350,6 +1375,7 @@
 
     .vdrw input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
+      appearance: none;
       width: 20px;
       height: 20px;
       border-radius: 50%;
@@ -1669,33 +1695,37 @@
 
     .th-grid {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       margin-top: 8px;
+      align-items: center;
     }
 
     .th-btn {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      border: 2px solid transparent;
-      background: var(--t-base);
-      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(var(--t-rgb), 0.3);
+      /* Thin 1px colored border — no transparent gap */
+      border: 1.5px solid rgba(var(--t-rgb), 0.45);
+      /* Subtle metallic linear sweep: light → true color → slight shadow */
+      background: linear-gradient(145deg,
+          color-mix(in srgb, var(--t-base) 70%, #fff) 0%,
+          var(--t-base) 55%,
+          color-mix(in srgb, var(--t-base) 70%, #000) 100%);
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
       cursor: pointer;
-      position: relative;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+      transition: transform .18s var(--ease-spring), box-shadow .18s ease, border-color .18s ease;
     }
 
-    .th-btn::after {
-      content: '';
-      position: absolute;
-      inset: 2px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
+    .th-btn:hover {
+      transform: scale(1.12);
+      border-color: rgba(var(--t-rgb), 0.75);
+      box-shadow: 0 2px 10px rgba(var(--t-rgb), 0.3);
     }
 
     .th-btn.act {
-      border-color: var(--t-glow);
-      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6), 0 0 18px rgba(var(--t-glow), 0.6);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 0 2.5px rgba(var(--t-rgb), 0.45), 0 2px 12px rgba(var(--t-rgb), 0.4);
       transform: scale(1.15);
     }
 
@@ -2484,25 +2514,34 @@
     /* ─── Sleep Timer ─── */
     .sleep-select {
       flex: 1;
-      background: rgba(255, 255, 255, .05);
-      border: 1px solid rgba(var(--t-rgb), .16);
+      /* Solid dark bg so the native dropdown never shows white */
+      background-color: #0e1420;
+      border: 1px solid rgba(var(--t-rgb), .20);
       border-radius: 4px;
       color: var(--cream);
       font-family: 'DM Mono', monospace;
       font-size: clamp(.7rem, 1.4vmin, .84rem);
-      padding: 7px 9px;
+      padding: 7px 28px 7px 9px;
       outline: none;
       cursor: pointer;
       appearance: none;
       -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill=`rgba(${thRGB},0.5)`/%3E%3C/svg%3E");
+      /* Simple chevron arrow in cream */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a09488'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 9px center;
       background-size: 8px;
     }
 
+    /* Style the dropdown options — respected by Firefox & most Chromium builds */
+    .sleep-select option {
+      background-color: #0e1420;
+      color: var(--cream);
+    }
+
     .sleep-select:focus {
       border-color: rgba(var(--t-rgb), .45);
+      background-color: #111827;
     }
 
     #sleepLbl {
@@ -2746,14 +2785,18 @@
       <div>
         <div class="slbl">Clock Theme</div>
         <div class="th-grid">
-          <button class="th-btn act" style="--t-rgb:196,160,82; --t-base:#c4a052; --t-glow:#e8cf85"
-            onclick="setTheme('gold',this)" aria-label="Gold Theme"></button>
-          <button class="th-btn" style="--t-rgb:170,180,195; --t-base:#aab4c3; --t-glow:#ffffff"
-            onclick="setTheme('silver',this)" aria-label="Silver Theme"></button>
-          <button class="th-btn" style="--t-rgb:220,155,145; --t-base:#dc9b91; --t-glow:#ffcdc5"
-            onclick="setTheme('rose',this)" aria-label="Rose Gold Theme"></button>
-          <button class="th-btn" style="--t-rgb:120,125,130; --t-base:#787d82; --t-glow:#a0c0e0"
-            onclick="setTheme('platinum',this)" aria-label="Platinum Theme"></button>
+          <!-- Gold -->
+          <button class="th-btn act" style="--t-rgb:196,148,62; --t-base:#c4943e; --t-glow:#e8cc78"
+            onclick="setTheme('gold',this)" aria-label="Gold"></button>
+          <!-- Silver -->
+          <button class="th-btn" style="--t-rgb:195,205,220; --t-base:#c3cddc; --t-glow:#eaf0ff"
+            onclick="setTheme('silver',this)" aria-label="Silver"></button>
+          <!-- Rose Gold -->
+          <button class="th-btn" style="--t-rgb:208,130,112; --t-base:#d08270; --t-glow:#f0b8b0"
+            onclick="setTheme('rose',this)" aria-label="Rose Gold"></button>
+          <!-- Platinum -->
+          <button class="th-btn" style="--t-rgb:100,120,148; --t-base:#647894; --t-glow:#a8c4e0"
+            onclick="setTheme('platinum',this)" aria-label="Platinum"></button>
         </div>
       </div>
       <div class="hrd"></div>
