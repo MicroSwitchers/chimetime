@@ -2021,7 +2021,7 @@
        ──────────────────────────────────────── */
     @media (max-width: 599px) and (orientation: landscape) {
       :root {
-        --CLK: clamp(140px, min(88vh, 40vw), 220px);
+        --CLK: clamp(140px, min(80vh, 38vw), 220px);
         --fs: clamp(11px, 2.2vmin, 14px);
         --DW: min(90vw, 320px);
       }
@@ -2030,7 +2030,7 @@
         grid-template-columns: var(--CLK) 1fr;
         grid-template-rows: 1fr;
         grid-template-areas: "clock info";
-        padding: 0 8px 0 clamp(50px, 9vw, 64px);
+        padding: 0 8px 0 clamp(40px, 8vw, 56px);
         align-items: center;
         gap: 0 12px;
       }
@@ -2062,11 +2062,13 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+        justify-content: center;
         padding: 8px 0 4px;
         padding-right: 0;
         transform: none;
         width: 100%;
-        height: auto;
+        height: 100vh;
+        overflow-y: auto;
       }
 
       .panel-left.in {
@@ -2074,18 +2076,28 @@
       }
 
       .panel-right {
-        display: none !important;
-        /* Complications hidden in phone-landscape to save space */
+        display: flex !important;
+        width: 100%;
+        margin-top: 12px;
+        gap: 6px;
+      }
+
+      .compl-block {
+        background: rgba(var(--t-rgb), .04);
+        border: 1px solid rgba(var(--t-rgb), .11);
+        border-radius: 8px;
+        padding: 4px 8px;
+        gap: 1px;
       }
 
       .time-arch {
-        font-size: clamp(32px, 9vmin, 56px);
+        font-size: clamp(32px, 8vmin, 50px);
         line-height: 1;
         text-align: left;
       }
 
       .time-secs {
-        font-size: clamp(.72rem, 1.8vmin, .92rem);
+        font-size: clamp(.65rem, 1.6vmin, .85rem);
         text-align: left;
         margin-top: 1px;
       }
@@ -2123,8 +2135,8 @@
        ──────────────────────────────────────── */
     @media (orientation: portrait) {
       :root {
-        --CLK: clamp(160px, min(60vw, 50vh), 320px);
-        --fs: clamp(12px, 3vw, 15px);
+        --CLK: clamp(160px, min(58vw, 42vh), 300px);
+        --fs: clamp(12px, 3.2vw, 16px);
         --DW: min(92vw, 360px);
       }
 
@@ -2132,16 +2144,16 @@
       .scene {
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: var(--CLK) auto auto 80px;
+        grid-template-rows: var(--CLK) max-content max-content 80px;
         grid-template-areas:
           "clock"
           "timedate"
           "compls"
           "timeline";
-        padding: env(safe-area-inset-top, 4px) clamp(12px, 4vw, 24px) 0;
+        padding: env(safe-area-inset-top, 4px) clamp(10px, 3vw, 20px) 0;
         align-items: start;
         justify-items: stretch;
-        gap: 0;
+        gap: clamp(4px, 1.5vh, 12px);
       }
 
       .hist-strip {
@@ -2263,6 +2275,34 @@
         left: auto;
         right: clamp(6px, 2vw, 14px);
         transform: none;
+      }
+    }
+
+    /* ────────────────────────────────────────
+       PHONE LANDSCAPE ( ≤ 480px height )
+       Squeeze clock and hide non-essentials
+       ──────────────────────────────────────── */
+    @media (max-height: 480px) and (orientation: landscape) {
+      :root {
+        --CLK: clamp(140px, 80vh, 220px);
+      }
+
+      .scene {
+        padding: 4px clamp(12px, 4vw, 24px) 0;
+        grid-template-rows: 1fr 60px;
+      }
+
+      .panel-left {
+        padding-top: 0;
+        justify-content: center;
+      }
+
+      .time-arch {
+        font-size: clamp(32px, 12vh, 48px);
+      }
+
+      .bar-bottom {
+        padding: 2px 10px 4px;
       }
     }
 
@@ -3195,12 +3235,12 @@
       // Secondary shoulder arc (opposite side, dimmer)
       c.beginPath(); c.arc(CX, CY, R - .3, rimA + Math.PI - .5, rimA + Math.PI + .5);
       c.strokeStyle = 'rgba(80,100,140,0.10)'; c.lineWidth = 1.2; c.stroke();
-      // Wandering glint (sparkle at bezel/crystal junction)
+      // Wandering glint (sparkle at bezel/crystal junction) - Dampened per user request
       const bx = CX + Math.cos(rimA) * (RO - 2), by = CY + Math.sin(rimA) * (RO - 2);
-      const bvG = c.createRadialGradient(bx, by, 0, bx, by, 22);
-      bvG.addColorStop(0, 'rgba(255,245,188,.45)');
+      const bvG = c.createRadialGradient(bx, by, 0, bx, by, 14);
+      bvG.addColorStop(0, 'rgba(255,245,188,.20)');
       bvG.addColorStop(1, 'rgba(255,245,188,0)');
-      c.beginPath(); c.arc(bx, by, 18, 0, Math.PI * 2); c.fillStyle = bvG; c.fill();
+      c.beginPath(); c.arc(bx, by, 12, 0, Math.PI * 2); c.fillStyle = bvG; c.fill();
     }
 
     function drawCenter(c) {
