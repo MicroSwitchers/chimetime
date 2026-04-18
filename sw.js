@@ -3,7 +3,7 @@
 
 const CACHE = 'timechime-v1';
 const CORE = [
-  './time-chime-rpi-29.html',
+  './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
