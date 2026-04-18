@@ -2644,93 +2644,100 @@
     }
 
     /* ────────────────────────────────────────
-       RASPBERRY PI 5" — 800 × 480 LANDSCAPE
-       Overrides the generic ≤480px landscape
-       query for wide low-height displays.
+       RASPBERRY PI 5–7" — 800 × 480 LANDSCAPE
+       Physical screen is small so everything must
+       be larger / bolder, not smaller — the low
+       pixel count means each px is already big.
        ──────────────────────────────────────── */
     @media (min-width: 700px) and (max-height: 480px) and (orientation: landscape) {
       :root {
-        --CLK: 248px;
-        --PW: 110px;
-        --DW: 260px;
-        --fs: 13px;
+        /* Clock fills ~65% of height — bold centrepiece */
+        --CLK: 310px;
+        /* Side panels as wide as room allows */
+        --PW: 128px;
+        /* Drawer just covers half the scene */
+        --DW: 300px;
+        /* Larger base font for legibility at arm's length */
+        --fs: 15px;
       }
 
-      /* Hide history strip — reclaim its row height */
+      /* Hide history strip — reclaim its row */
       .hist-strip {
         display: none;
       }
 
       .scene {
-        grid-template-rows: 1fr 54px;
-        padding: 0 12px 0 54px;
+        grid-template-rows: 1fr 60px;
+        /* btn-strip ≈ 48px left, light right margin */
+        padding: 0 10px 0 52px;
         gap: 0;
       }
 
       .panel-left {
         padding-top: 0;
         justify-content: center;
-        gap: 3px;
+        gap: 4px;
       }
 
-      /* Time display — prominent but not oversized */
+      /* Time display — large and crisp */
       .time-arch {
-        font-size: 44px;
+        font-size: 54px;
+        /* keep glow but skip animation for Pi GPU */
         animation: none;
         text-shadow:
-          0 0 80px rgba(255,255,255,.55),
-          0 0 30px rgba(255,255,255,.35),
-          0 0 10px rgba(255,255,255,.85),
-          0 2px 4px rgba(0,0,0,.5);
+          0 0 60px rgba(255,255,255,.60),
+          0 0 20px rgba(255,255,255,.40),
+          0 0 8px  rgba(255,255,255,.90),
+          0 2px 4px rgba(0,0,0,.55);
       }
 
       .time-secs {
-        font-size: 0.78rem;
-        margin-top: 1px;
+        font-size: 0.82rem;
         letter-spacing: .14em;
+        margin-top: 2px;
       }
 
       .time-date-line {
-        font-size: 0.78rem;
+        font-size: 0.82rem;
         letter-spacing: .10em;
       }
 
-      /* Complication cards — compact but legible */
+      /* Complication cards — readable at a glance */
       .compl-block {
-        padding: 6px 8px 5px;
-        gap: 1px;
+        padding: 7px 10px 6px;
+        gap: 2px;
       }
 
       .compl-val {
-        font-size: 0.85rem !important;
+        font-size: 0.96rem !important;
       }
 
       .compl-sub {
-        font-size: 0.62rem;
+        font-size: 0.68rem;
         letter-spacing: .08em;
       }
 
       .compl-lbl {
-        font-size: 0.62rem;
+        font-size: 0.68rem;
         letter-spacing: .14em;
       }
 
       /* Timeline bar */
       .bar-bottom {
-        padding: 2px 12px 3px 54px;
+        padding: 3px 10px 4px 52px;
       }
 
-      /* Drawer — narrower so clock stays visible when open */
+      /* Drawer — scrollable, fits screen height */
       .drw {
         width: var(--DW);
         max-height: 100dvh;
         overflow-y: auto;
       }
 
-      /* Button strip — tighter vertical spacing */
+      /* Button strip — slightly tighter */
       #btnStrip {
-        gap: 2px;
-        padding: 6px 0;
+        gap: 3px;
+        padding: 8px 0;
       }
     }
 
