@@ -2663,19 +2663,24 @@
         display: none;
       }
 
+      /* Hide timeline bar entirely — its 50px is not worth the risk of cutoff */
+      .bar-bottom {
+        display: none !important;
+      }
+
       .scene {
-        grid-template-rows: 1fr 50px;
-        padding: 0 10px 0 52px;
+        /* Single content row — fills all available height */
+        grid-template-rows: 1fr;
+        max-height: 100svh;
+        padding: 4px 10px 4px 52px;
         gap: 0;
         overflow: hidden;
       }
 
       /* Re-map all content to row 1 (base CSS says row 2 of a 3-row grid) */
-      .panel-left  { grid-row: 1; }
+      .panel-left   { grid-row: 1; }
       .scene-center { grid-row: 1; }
-      .panel-right { grid-row: 1; }
-      /* Bar maps to the new row 2 (base CSS says row 3) */
-      .bar-bottom  { grid-row: 2; }
+      .panel-right  { grid-row: 1; }
 
       .panel-left {
         padding-top: 0;
@@ -2724,12 +2729,6 @@
       .compl-lbl {
         font-size: 0.68rem;
         letter-spacing: .14em;
-      }
-
-      /* Timeline bar */
-      .bar-bottom {
-        padding: 2px 10px 3px 52px;
-        overflow: hidden;
       }
 
       /* Drawer — scrollable, fits screen height */
