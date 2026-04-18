@@ -2673,6 +2673,13 @@
         gap: 0;
       }
 
+      /* Re-map all content to row 1 (base CSS says row 2 of a 3-row grid) */
+      .panel-left  { grid-row: 1; }
+      .scene-center { grid-row: 1; }
+      .panel-right { grid-row: 1; }
+      /* Bar maps to the new row 2 (base CSS says row 3) */
+      .bar-bottom  { grid-row: 2; }
+
       .panel-left {
         padding-top: 0;
         justify-content: center;
