@@ -2651,13 +2651,10 @@
        ──────────────────────────────────────── */
     @media (min-width: 700px) and (max-height: 480px) and (orientation: landscape) {
       :root {
-        /* Clock fills ~65% of height — bold centrepiece */
-        --CLK: 310px;
-        /* Side panels as wide as room allows */
+        /* 270px clock + 50px bar = 320px used, leaving 160px breathing room in 480px */
+        --CLK: 270px;
         --PW: 128px;
-        /* Drawer just covers half the scene */
         --DW: 300px;
-        /* Larger base font for legibility at arm's length */
         --fs: 15px;
       }
 
@@ -2667,10 +2664,10 @@
       }
 
       .scene {
-        grid-template-rows: 1fr 60px;
-        /* btn-strip ≈ 48px left, light right margin */
+        grid-template-rows: 1fr 50px;
         padding: 0 10px 0 52px;
         gap: 0;
+        overflow: hidden;
       }
 
       /* Re-map all content to row 1 (base CSS says row 2 of a 3-row grid) */
@@ -2731,7 +2728,8 @@
 
       /* Timeline bar */
       .bar-bottom {
-        padding: 3px 10px 4px 52px;
+        padding: 2px 10px 3px 52px;
+        overflow: hidden;
       }
 
       /* Drawer — scrollable, fits screen height */
@@ -2746,6 +2744,38 @@
         gap: 3px;
         padding: 8px 0;
       }
+
+      /* ── Performance kills — RPi GPU can't handle these ── */
+
+      /* Kill backdrop-filter on every element that uses it */
+      .h-item,
+      .compl-block,
+      #btnStrip,
+      .dov,
+      .drw,
+      .ibtn,
+      .al-item {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      /* Kill rotating god rays — largest GPU offender */
+      .god-rays { display: none; }
+
+      /* Kill CSS background animations */
+      .env-overlay::before { animation: none !important; }
+      .env-overlay::after  { animation: none !important; opacity: 0.28; }
+      .vign                { animation: none !important; }
+      .grain               { display: none; }
+
+      /* Kill complication shimmer animation */
+      .compl-block::before { animation: none !important; opacity: 0 !important; }
+
+      /* Kill particle canvas — particles drawn here */
+      #fx-canvas { display: none; }
+
+      /* Kill halo glow elements */
+      #halo, #halo2 { display: none; }
     }
 
     /* ────────────────────────────────────────
@@ -3419,24 +3449,27 @@
       document.addEventListener('mousemove', e => { const s = e.clientX + 'px'; const t = e.clientY + 'px'; xc.style.left = s; xc.style.top = t; xcd.style.left = s; xcd.style.top = t; });
     }
 
+    // ── RPi low-performance flag ──
+    const _isRPi = window.matchMedia('(min-width:700px) and (max-height:480px) and (orientation:landscape)').matches;
+
     // ── STARFIELD — deep space scene with nebulae, constellations, dust ──
     (function () {
       const c = document.getElementById('bg-canvas'), ct = c.getContext('2d');
       function resizeBg() { c.width = window.innerWidth; c.height = window.innerHeight; }
       resizeBg(); window.addEventListener('resize', resizeBg);
 
-      // Layer A: far tiny static stars
-      const sA = Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random(), r: .35 + Math.random() * .55, o: Math.random() * .32 + .05, t: Math.random() * 6.28, sp: .0008 + Math.random() * .0018 }));
-      // Layer B: medium drifting stars
-      const sB = Array.from({ length: 55 }, () => ({ x: Math.random(), y: Math.random(), r: .65 + Math.random() * .75, o: Math.random() * .42 + .10, t: Math.random() * 6.28, sp: .0013 + Math.random() * .0020, dx: (Math.random() - .5) * .000028, dy: (Math.random() - .5) * .000028 }));
-      // Layer C: 12 bright stars with 8-point diffraction spikes + corona
-      const sC = Array.from({ length: 12 }, () => ({ x: Math.random(), y: Math.random(), r: 1.1 + Math.random() * 1.0, o: .32 + Math.random() * .42, t: Math.random() * 6.28, sp: .0025 + Math.random() * .0020 }));
+      // Layer A: far tiny static stars (fewer on RPi)
+      const sA = Array.from({ length: _isRPi ? 60 : 160 }, () => ({ x: Math.random(), y: Math.random(), r: .35 + Math.random() * .55, o: Math.random() * .32 + .05, t: Math.random() * 6.28, sp: .0008 + Math.random() * .0018 }));
+      // Layer B: medium drifting stars (fewer on RPi)
+      const sB = Array.from({ length: _isRPi ? 20 : 55 }, () => ({ x: Math.random(), y: Math.random(), r: .65 + Math.random() * .75, o: Math.random() * .42 + .10, t: Math.random() * 6.28, sp: .0013 + Math.random() * .0020, dx: (Math.random() - .5) * .000028, dy: (Math.random() - .5) * .000028 }));
+      // Layer C: bright stars — reduced + no spikes on RPi
+      const sC = Array.from({ length: _isRPi ? 5 : 12 }, () => ({ x: Math.random(), y: Math.random(), r: 1.1 + Math.random() * 1.0, o: .32 + Math.random() * .42, t: Math.random() * 6.28, sp: .0025 + Math.random() * .0020 }));
 
       // Constellation pairs (indices into sC)
-      const constPairs = [[0,2],[2,5],[5,8],[8,11],[1,4],[4,7],[7,10],[3,6],[6,9],[0,3],[1,6]];
+      const constPairs = _isRPi ? [] : [[0,2],[2,5],[5,8],[8,11],[1,4],[4,7],[7,10],[3,6],[6,9],[0,3],[1,6]];
 
-      // Nebula gas clouds — drift very slowly across the canvas
-      const nebulae = [
+      // Nebula gas clouds — disabled on RPi (expensive ellipse+gradient per frame)
+      const nebulae = _isRPi ? [] : [
         { x: .14, y: .32, rx: .38, ry: .24, r: 148, g: 22, b: 88,  al: .058, dx:  8e-6, dy:  5e-6, t: 0.0 },
         { x: .80, y: .20, rx: .32, ry: .20, r:  22, g: 80, b: 148, al: .052, dx: -6e-6, dy:  4e-6, t: 2.1 },
         { x: .50, y: .80, rx: .42, ry: .25, r:  18, g: 112, b: 100, al: .048, dx:  5e-6, dy: -6e-6, t: 4.2 },
@@ -3444,8 +3477,8 @@
         { x: .28, y: .65, rx: .22, ry: .14, r: 152, g: 38, b:  38, al: .034, dx:  4e-6, dy: -4e-6, t: 3.5 },
       ];
 
-      // Golden dust motes — float slowly upward
-      const dust = Array.from({ length: 35 }, () => ({
+      // Golden dust motes — disabled on RPi
+      const dust = Array.from({ length: _isRPi ? 0 : 35 }, () => ({
         x: Math.random(), y: Math.random(),
         r: .28 + Math.random() * .48,
         t: Math.random() * 6.28, sp: .0018 + Math.random() * .0035,
@@ -3453,13 +3486,14 @@
         dx: (Math.random() - .5) * .000035, dy: -(1.8e-5 + Math.random() * 2.8e-5)
       }));
 
-      // Shooting stars
+      // Shooting stars — disabled on RPi
       const shoots = [];
       function spawnShoot() {
+        if (_isRPi) return;
         shoots.push({ x: Math.random() * 1.3 - .15, y: Math.random() * .55, dx: .011 + Math.random() * .010, dy: .004 + Math.random() * .008, len: .09 + Math.random() * .07, life: 1, decay: .022 + Math.random() * .016, width: .9 + Math.random() * .8 });
         setTimeout(spawnShoot, 5000 + Math.random() * 14000);
       }
-      setTimeout(spawnShoot, 3000);
+      if (!_isRPi) setTimeout(spawnShoot, 3000);
 
       function draw() {
         const W = c.width, H = c.height;
@@ -4293,7 +4327,7 @@
       const f = document.getElementById('flash'); f.className = 'flash'; void f.offsetWidth; f.className = 'flash pop';
       const rect = canvas.getBoundingClientRect(), rx = rect.left + rect.width / 2, ry = rect.top + rect.height / 2;
       ['r1', 'r2', 'r3'].forEach((id, i) => { const r = document.getElementById(id); r.className = 'rpl gold'; r.style.left = rx + 'px'; r.style.top = ry + 'px'; void r.offsetWidth; r.className = `rpl gold ${['a', 'b', 'c'][i]}`; });
-      if (window._emitParticles) window._emitParticles(rx, ry, 58);
+      if (!_isRPi && window._emitParticles) window._emitParticles(rx, ry, 58);
     }
     const histArr = [];
     function addHist(label, type) { histArr.unshift({ label, type }); if (histArr.length > 3) histArr.pop(); const el = document.getElementById('histStrip'); el.innerHTML = ''; el.classList.add('vis'); histArr.forEach((e, i) => { const d = document.createElement('div'); d.className = 'h-item'; d.style.opacity = i === 0 ? '1' : i === 1 ? '.38' : '.16'; const clr = e.type === 'alarm' || e.type === 'snooze' ? 'red' : 'gold'; const lbl = e.type === 'alarm' ? 'alarm' : e.type === 'snooze' ? 'snoozed' : e.type === 'hour' ? 'on the hour' : 'half past'; d.innerHTML = `<span class="h-ts ${clr}">${e.label}</span><span class="h-dot">·</span><span class="h-tp">${lbl}</span>`; el.appendChild(d); if (i < histArr.length - 1) { const sep = document.createElement('span'); sep.className = 'bsep'; sep.textContent = '·'; el.appendChild(sep); } }); }
